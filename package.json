@@ -5,8 +5,8 @@
   "description": "Formdash monorepo: Advanced form builder plugin for EmDash CMS",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm -r run build",
-    "dev": "pnpm -r run dev",
+    "build": "node init && pnpm -r run build",
+    "dev": "node init && pnpm -r run dev",
     "test": "pnpm -r run test",
     "typecheck": "pnpm -r run typecheck"
   },
@@ -24,6 +24,7 @@
   "type": "module",
   "devDependencies": {
     "@types/node": "^26.6.6",
+    "node-fetch": "^3.3.2",
     "typescript": "^7.0.2"
   }
 }

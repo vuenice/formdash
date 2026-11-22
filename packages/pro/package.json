@@ -16,12 +16,15 @@
     "src"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "node init && tsc",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist"
   },
   "keywords": [
-    "emdash", "forms", "conditional-logic", "multi-step"
+    "emdash",
+    "forms",
+    "conditional-logic",
+    "multi-step"
   ],
   "author": "Swapnil Maheshwari",
   "license": "SEE LICENSE IN LICENSE.md",
