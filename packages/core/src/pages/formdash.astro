@@ -1,0 +1,571 @@
+---
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formdash Studio</title>
+    <style is:global>
+      /* ------------------------------------------------------------------ */
+      /*  RESET & BASE                                                       */
+      /* ------------------------------------------------------------------ */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --gray-50:  #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --blue-50:  #eff6ff;
+        --blue-100: #dbeafe;
+        --blue-200: #bfdbfe;
+        --blue-500: #3b82f6;
+        --blue-600: #2563eb;
+        --blue-700: #1d4ed8;
+        --red-500:  #ef4444;
+        --red-50:   #fef2f2;
+        --amber-50: #fffbeb;
+        --amber-100:#fef3c7;
+        --amber-200:#fde68a;
+        --amber-600:#d97706;
+        --amber-700:#b45309;
+        --amber-800:#92400e;
+        --green-50: #f0fdf4;
+        --green-100:#dcfce7;
+        --green-600:#16a34a;
+        --green-700:#15803d;
+        --radius-sm: 4px;
+        --radius:    6px;
+        --radius-lg: 8px;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+        --shadow:    0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05);
+        --transition: 150ms ease;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                     "Helvetica Neue", Arial, sans-serif;
+        background: var(--gray-100);
+        color: var(--gray-900);
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+        font-size: 14px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ------------------------------------------------------------------ */
+      /*  TOP BAR                                                            */
+      /* ------------------------------------------------------------------ */
+      .topbar {
+        height: 48px;
+        background: #fff;
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        flex-shrink: 0;
+      }
+      .topbar-left { display: flex; align-items: center; gap: 10px; }
+      .brand { font-size: 14px; font-weight: 600; color: var(--gray-900); letter-spacing: -0.01em; }
+      .sep { width: 1px; height: 16px; background: var(--gray-300); }
+      .badge { font-size: 11px; font-weight: 500; padding: 2px 6px; border-radius: var(--radius-sm); background: var(--green-50); color: var(--green-700); border: 1px solid #bbf7d0; }
+      .topbar-actions { display: flex; gap: 6px; }
+      .btn {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 5px 12px; border-radius: var(--radius); font-size: 13px;
+        font-weight: 500; cursor: pointer; border: 1px solid transparent;
+        transition: all var(--transition); line-height: 1.4;
+        text-decoration: none;
+      }
+      .btn-ghost { background: transparent; color: var(--gray-600); border-color: var(--gray-200); }
+      .btn-ghost:hover { background: var(--gray-50); color: var(--gray-800); border-color: var(--gray-300); }
+      .btn-primary { background: var(--gray-900); color: #fff; border-color: var(--gray-900); }
+      .btn-primary:hover { background: var(--gray-800); }
+
+      /* ------------------------------------------------------------------ */
+      /*  3-COLUMN LAYOUT                                                    */
+      /* ------------------------------------------------------------------ */
+      .studio { flex: 1; display: flex; overflow: hidden; }
+
+      /* LEFT: FIELD PALETTE */
+      .palette {
+        width: 240px; background: #fff; border-right: 1px solid var(--gray-200);
+        padding: 16px 12px; overflow-y: auto; flex-shrink: 0;
+      }
+      .palette-section-label {
+        font-size: 11px; font-weight: 600; color: var(--gray-400);
+        text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;
+      }
+      .palette-group { display: flex; flex-direction: column; gap: 2px; margin-bottom: 20px; }
+      .palette-item {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 7px 10px; border-radius: var(--radius); font-size: 13px;
+        font-weight: 400; color: var(--gray-700); cursor: pointer;
+        transition: all var(--transition); border: 1px solid transparent;
+      }
+      .palette-item:hover { background: var(--blue-50); color: var(--blue-700); }
+      .palette-item .plus { font-size: 15px; color: var(--gray-400); font-weight: 300; line-height: 1; }
+      .palette-item:hover .plus { color: var(--blue-500); }
+      .pro-tag {
+        font-size: 10px; font-weight: 600; padding: 1px 5px;
+        border-radius: var(--radius-sm); background: var(--amber-100);
+        color: var(--amber-700); letter-spacing: 0.02em;
+      }
+
+      /* CENTER: CANVAS */
+      .canvas-area {
+        flex: 1; background: var(--gray-100); padding: 32px 24px;
+        overflow-y: auto; display: flex; justify-content: center; align-items: flex-start;
+      }
+      .form-canvas {
+        width: 100%; max-width: 560px; background: #fff;
+        border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md); padding: 32px;
+      }
+      .canvas-header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--gray-100); }
+      .canvas-title { font-size: 20px; font-weight: 600; color: var(--gray-900); outline: none; line-height: 1.3; }
+      .canvas-desc { font-size: 14px; color: var(--gray-500); margin-top: 4px; outline: none; line-height: 1.5; }
+
+      /* FIELD CARDS */
+      .field-card {
+        position: relative; padding: 12px; border: 1px solid transparent;
+        border-radius: var(--radius); margin-bottom: 8px; transition: all var(--transition);
+        cursor: pointer; background: #fff;
+      }
+      .field-card:hover { border-color: var(--gray-200); background: var(--gray-50); }
+      .field-card.selected { border-color: var(--blue-500); background: var(--blue-50); box-shadow: 0 0 0 1px var(--blue-500); }
+      .field-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+      .field-card-label { font-size: 13px; font-weight: 500; color: var(--gray-800); }
+      .required-mark { color: var(--red-500); margin-left: 2px; }
+      .field-card-tools { display: flex; gap: 4px; opacity: 0; transition: opacity var(--transition); }
+      .field-card:hover .field-card-tools,
+      .field-card.selected .field-card-tools { opacity: 1; }
+      .tool-btn {
+        background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+        padding: 2px 8px; font-size: 11px; color: var(--gray-500); cursor: pointer;
+        transition: all var(--transition);
+      }
+      .tool-btn:hover { background: var(--red-50); border-color: var(--red-500); color: var(--red-500); }
+      .field-preview-input {
+        width: 100%; padding: 8px 10px; border: 1px solid var(--gray-200);
+        border-radius: var(--radius); font-size: 13px; background: var(--gray-50);
+        color: var(--gray-400); pointer-events: none;
+      }
+      .logic-indicator {
+        display: inline-block; font-size: 11px; color: var(--amber-700);
+        background: var(--amber-50); border: 1px solid var(--amber-100);
+        padding: 2px 8px; border-radius: var(--radius-sm); margin-top: 6px; font-weight: 500;
+      }
+
+      /* ------------------------------------------------------------------ */
+      /*  INSPECTOR                                                          */
+      /* ------------------------------------------------------------------ */
+      .inspector {
+        width: 300px; background: var(--gray-50); border-left: 1px solid var(--gray-200);
+        display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
+      }
+
+      /* Inspector header */
+      .insp-head {
+        background: #fff; border-bottom: 1px solid var(--gray-200);
+        padding: 14px 16px; flex-shrink: 0;
+      }
+      .insp-head-name {
+        font-size: 14px; font-weight: 600; color: var(--gray-900);
+        margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .insp-head-meta { display: flex; align-items: center; gap: 6px; }
+      .insp-type-badge {
+        display: inline-flex; align-items: center; font-size: 11px; font-weight: 500;
+        padding: 2px 8px; border-radius: var(--radius-sm); background: var(--blue-50);
+        color: var(--blue-600); border: 1px solid var(--blue-100); text-transform: capitalize;
+      }
+      .insp-id {
+        font-size: 11px; color: var(--gray-400);
+        font-family: "SF Mono", SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+      }
+
+      /* Inspector tabs */
+      .insp-tabs {
+        display: flex; background: #fff; border-bottom: 1px solid var(--gray-200); flex-shrink: 0;
+      }
+      .insp-tab {
+        flex: 1; padding: 9px 0; font-size: 12px; font-weight: 500;
+        color: var(--gray-400); text-align: center; cursor: pointer;
+        border: none; background: none; border-bottom: 2px solid transparent;
+        transition: all var(--transition);
+      }
+      .insp-tab:hover { color: var(--gray-600); }
+      .insp-tab.active { color: var(--gray-900); border-bottom-color: var(--blue-500); }
+
+      /* Inspector body */
+      .insp-body { flex: 1; overflow-y: auto; padding: 12px; }
+
+      /* Empty state */
+      .insp-empty {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; height: 100%; text-align: center; padding: 24px;
+      }
+      .insp-empty-circle {
+        width: 48px; height: 48px; border-radius: 50%; background: var(--gray-100);
+        display: flex; align-items: center; justify-content: center; margin-bottom: 14px;
+      }
+      .insp-empty-circle svg { width: 22px; height: 22px; stroke: var(--gray-300); fill: none; stroke-width: 1.5; }
+      .insp-empty-title { font-size: 13px; font-weight: 500; color: var(--gray-500); margin-bottom: 4px; }
+      .insp-empty-desc { font-size: 12px; color: var(--gray-400); line-height: 1.5; }
+
+      /* Cards inside inspector */
+      .insp-card {
+        background: #fff; border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg); margin-bottom: 10px; overflow: hidden;
+      }
+      .insp-card-head {
+        padding: 10px 14px; background: var(--gray-50); border-bottom: 1px solid var(--gray-200);
+        font-size: 11px; font-weight: 600; color: var(--gray-500);
+        text-transform: uppercase; letter-spacing: 0.04em;
+      }
+      .insp-card-body { padding: 14px; }
+
+      /* Inspector form rows */
+      .insp-row { margin-bottom: 14px; }
+      .insp-row:last-child { margin-bottom: 0; }
+      .insp-label {
+        display: block; font-size: 12px; font-weight: 500;
+        color: var(--gray-600); margin-bottom: 5px;
+      }
+      .insp-input {
+        display: block; width: 100%; padding: 8px 10px; border: 1px solid var(--gray-200);
+        border-radius: var(--radius); font-size: 13px; background: #fff;
+        color: var(--gray-900); transition: border-color var(--transition), box-shadow var(--transition);
+        font-family: inherit;
+      }
+      .insp-input:focus { outline: none; border-color: var(--blue-500); box-shadow: 0 0 0 3px rgba(59,130,246,.08); }
+      .insp-input:disabled { background: var(--gray-50); color: var(--gray-400); cursor: not-allowed; }
+      .insp-hint { font-size: 11px; color: var(--gray-400); margin-top: 4px; line-height: 1.4; }
+
+      /* Toggle row */
+      .insp-toggle-row {
+        display: flex; align-items: center; justify-content: space-between; padding: 4px 0;
+      }
+      .insp-toggle-label { font-size: 13px; color: var(--gray-700); font-weight: 400; }
+
+      /* Toggle switch */
+      .toggle { position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; }
+      .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+      .toggle-slider {
+        position: absolute; inset: 0; background: var(--gray-200); border-radius: 10px;
+        cursor: pointer; transition: background var(--transition);
+      }
+      .toggle-slider::after {
+        content: ""; position: absolute; width: 16px; height: 16px; border-radius: 50%;
+        background: #fff; top: 2px; left: 2px; box-shadow: var(--shadow-sm);
+        transition: transform var(--transition);
+      }
+      .toggle input:checked + .toggle-slider { background: var(--blue-500); }
+      .toggle input:checked + .toggle-slider::after { transform: translateX(16px); }
+
+      /* Logic card variant */
+      .insp-card.is-logic { border-color: var(--amber-200); }
+      .insp-card.is-logic .insp-card-head { background: var(--amber-50); border-color: var(--amber-200); color: var(--amber-700); }
+      .insp-card.is-logic .insp-card-body { background: var(--amber-50); }
+      .insp-card.is-logic .insp-input { border-color: var(--amber-200); background: #fff; }
+      .insp-card.is-logic .insp-input:focus { border-color: var(--amber-600); box-shadow: 0 0 0 3px rgba(217,119,6,.08); }
+      .insp-card.is-logic .insp-hint { color: var(--amber-700); }
+
+      /* Tab panels */
+      .insp-panel { display: none; }
+      .insp-panel.is-active { display: block; }
+    </style>
+  </head>
+  <body>
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="brand">Formdash Studio</span>
+        <span class="sep"></span>
+        <span class="badge">Live</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="window.open('/_emdash/admin', '_self')">Back to Emdash</button>
+        <a class="btn btn-ghost" href="/admin/formdash/preview" target="_blank">Preview</a>
+        <button class="btn btn-ghost" onclick="copyShortcode()">Copy Embed</button>
+        <button class="btn btn-primary" onclick="saveForm()">Save</button>
+      </div>
+    </header>
+
+    <!-- 3-COLUMN LAYOUT -->
+    <div class="studio">
+      <!-- LEFT: FIELD PALETTE -->
+      <aside class="palette">
+        <div class="palette-section-label">Fields</div>
+        <div class="palette-group">
+          <div class="palette-item" onclick="addField('text', 'Text Field')"><span>Text</span><span class="plus">+</span></div>
+          <div class="palette-item" onclick="addField('email', 'Email Address')"><span>Email</span><span class="plus">+</span></div>
+          <div class="palette-item" onclick="addField('phone', 'Phone Number')"><span>Phone</span><span class="plus">+</span></div>
+          <div class="palette-item" onclick="addField('textarea', 'Message')"><span>Paragraph</span><span class="plus">+</span></div>
+          <div class="palette-item" onclick="addField('select', 'Dropdown')"><span>Dropdown</span><span class="plus">+</span></div>
+          <div class="palette-item" onclick="addField('number', 'Number')"><span>Number</span><span class="plus">+</span></div>
+          <div class="palette-item" onclick="addField('date', 'Date')"><span>Date</span><span class="plus">+</span></div>
+          <div class="palette-item" onclick="addField('checkbox', 'Checkbox')"><span>Checkbox</span><span class="plus">+</span></div>
+        </div>
+        <div class="palette-section-label">Pro</div>
+        <div class="palette-group">
+          <div class="palette-item" onclick="addField('stripe_payment', 'Payment')"><span>Stripe Payment</span><span class="pro-tag">PRO</span></div>
+          <div class="palette-item" onclick="addField('file', 'File Upload')"><span>File Upload</span><span class="pro-tag">PRO</span></div>
+          <div class="palette-item" onclick="addField('rating', 'Rating')"><span>Rating</span><span class="pro-tag">PRO</span></div>
+          <div class="palette-item" onclick="addField('signature', 'Signature')"><span>Signature</span><span class="pro-tag">PRO</span></div>
+        </div>
+      </aside>
+
+      <!-- CENTER: LIVE FORM CANVAS -->
+      <main class="canvas-area">
+        <div class="form-canvas">
+          <div class="canvas-header">
+            <h2 class="canvas-title" contenteditable="true" id="formTitle">Project Estimate & Lead Gen</h2>
+            <p class="canvas-desc" contenteditable="true" id="formDesc">Tell us about your requirements for an instant quote.</p>
+          </div>
+          <div id="fieldsContainer"></div>
+        </div>
+      </main>
+
+      <!-- RIGHT: INSPECTOR -->
+      <aside class="inspector">
+        <div id="inspHead"></div>
+        <div id="inspTabs"></div>
+        <div class="insp-body" id="inspBody"></div>
+      </aside>
+    </div>
+
+    <script is:inline>
+      // ================================================================
+      // STATE
+      // ================================================================
+      let fields = [
+        { id: "fld_name", label: "Your Full Name", type: "text", required: true, hasLogic: false, placeholder: "John Doe" },
+        { id: "fld_email", label: "Business Email", type: "email", required: true, hasLogic: false, placeholder: "john@company.com" },
+        { id: "fld_service", label: "Service Needed", type: "select", required: true, hasLogic: false, options: ["Web Dev", "UI/UX", "Enterprise Migration"] },
+        { id: "fld_company", label: "Company Size (Enterprise Only)", type: "select", required: true, hasLogic: true, options: ["50-250", "250+"] },
+      ];
+
+      let selectedFieldId = null;
+      let activeTab = "properties";
+
+      // ================================================================
+      // RENDER CANVAS
+      // ================================================================
+      function renderCanvas() {
+        const container = document.getElementById("fieldsContainer");
+        container.innerHTML = "";
+        fields.forEach((field) => {
+          const card = document.createElement("div");
+          card.className = "field-card" + (field.id === selectedFieldId ? " selected" : "");
+          card.onclick = () => selectField(field.id);
+          const rm = field.required ? '<span class="required-mark">*</span>' : "";
+          const pv = field.type === "select" ? "Select an option..."
+                   : field.type === "textarea" ? "Enter text..."
+                   : field.placeholder || "User input...";
+          const lg = field.hasLogic
+            ? '<div class="logic-indicator">Conditional: shown when Service Needed = Enterprise Migration</div>' : "";
+          card.innerHTML =
+            '<div class="field-card-header">' +
+              '<span class="field-card-label">' + field.label + rm + '</span>' +
+              '<div class="field-card-tools">' +
+                '<button class="tool-btn" onclick="event.stopPropagation(); deleteField(\'' + field.id + '\')">Remove</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="field-preview-input">' + pv + '</div>' + lg;
+          container.appendChild(card);
+        });
+        renderInspector();
+      }
+
+      function selectField(id) { selectedFieldId = id; renderCanvas(); }
+
+      function addField(type, defaultLabel) {
+        const newId = "fld_" + Date.now();
+        fields.push({ id: newId, label: defaultLabel, type, required: false, hasLogic: false, placeholder: "" });
+        selectedFieldId = newId;
+        renderCanvas();
+      }
+
+      function deleteField(id) {
+        fields = fields.filter((f) => f.id !== id);
+        if (selectedFieldId === id) selectedFieldId = fields.length > 0 ? fields[0].id : null;
+        renderCanvas();
+      }
+
+      // ================================================================
+      // INSPECTOR TABS
+      // ================================================================
+      function switchTab(tab) {
+        activeTab = tab;
+        document.querySelectorAll(".insp-tab").forEach(t => t.classList.toggle("active", t.getAttribute("data-tab") === tab));
+        document.querySelectorAll(".insp-panel").forEach(p => p.classList.toggle("is-active", p.getAttribute("data-panel") === tab));
+      }
+
+      // ================================================================
+      // RENDER INSPECTOR
+      // ================================================================
+      function renderInspector() {
+        const field = fields.find((f) => f.id === selectedFieldId);
+        const head = document.getElementById("inspHead");
+        const tabs = document.getElementById("inspTabs");
+        const body = document.getElementById("inspBody");
+
+        if (!field) {
+          head.innerHTML = "";
+          tabs.innerHTML = "";
+          body.innerHTML =
+            '<div class="insp-empty">' +
+              '<div class="insp-empty-circle"><svg viewBox="0 0 24 24"><path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+              '<div class="insp-empty-title">No field selected</div>' +
+              '<div class="insp-empty-desc">Click a field on the canvas to configure it.</div>' +
+            '</div>';
+          return;
+        }
+
+        // --- HEAD ---
+        head.innerHTML =
+          '<div class="insp-head">' +
+            '<div class="insp-head-name">' + field.label + '</div>' +
+            '<div class="insp-head-meta">' +
+              '<span class="insp-type-badge">' + field.type.replace("_", " ") + '</span>' +
+              '<span class="insp-id">' + field.id + '</span>' +
+            '</div>' +
+          '</div>';
+
+        // --- TABS ---
+        tabs.innerHTML =
+          '<div class="insp-tabs">' +
+            '<button class="insp-tab' + (activeTab === "properties" ? " active" : "") + '" data-tab="properties" onclick="switchTab(\'properties\')">Properties</button>' +
+            '<button class="insp-tab' + (activeTab === "logic" ? " active" : "") + '" data-tab="logic" onclick="switchTab(\'logic\')">Logic</button>' +
+            '<button class="insp-tab' + (activeTab === "validation" ? " active" : "") + '" data-tab="validation" onclick="switchTab(\'validation\')">Validation</button>' +
+          '</div>';
+
+        // --- BODY ---
+        var html = "";
+
+        // Properties panel
+        html += '<div class="insp-panel' + (activeTab === "properties" ? " is-active" : "") + '" data-panel="properties">';
+        html += '<div class="insp-card">';
+        html += '<div class="insp-card-head">General</div>';
+        html += '<div class="insp-card-body">';
+        html += '<div class="insp-row"><label class="insp-label">Label</label><input class="insp-input" type="text" id="editLabel" value="' + field.label + '" /></div>';
+        html += '<div class="insp-row"><label class="insp-label">Placeholder</label><input class="insp-input" type="text" id="editPlaceholder" value="' + (field.placeholder || "") + '" placeholder="Hint text for users" /></div>';
+        html += '<div class="insp-row"><label class="insp-label">Type</label><input class="insp-input" type="text" value="' + field.type.replace("_", " ") + '" disabled /></div>';
+        html += '</div></div>';
+
+        html += '<div class="insp-card">';
+        html += '<div class="insp-card-head">Behavior</div>';
+        html += '<div class="insp-card-body">';
+        html += '<div class="insp-toggle-row">';
+        html += '<span class="insp-toggle-label">Required field</span>';
+        html += '<label class="toggle"><input type="checkbox" id="toggleReq"' + (field.required ? " checked" : "") + ' /><span class="toggle-slider"></span></label>';
+        html += '</div>';
+        html += '</div></div>';
+        html += '</div>';
+
+        // Logic panel
+        html += '<div class="insp-panel' + (activeTab === "logic" ? " is-active" : "") + '" data-panel="logic">';
+        html += '<div class="insp-card is-logic">';
+        html += '<div class="insp-card-head">Visibility Rule</div>';
+        html += '<div class="insp-card-body">';
+        html += '<div class="insp-row">';
+        html += '<label class="insp-label">Show this field</label>';
+        html += '<select class="insp-input" id="editLogic">';
+        html += '<option value="none"' + (!field.hasLogic ? " selected" : "") + '>Always</option>';
+        html += '<option value="enterprise"' + (field.hasLogic ? " selected" : "") + '>When "Service Needed" = Enterprise</option>';
+        html += '</select>';
+        html += '<p class="insp-hint">When a rule is active, this field stays hidden until the condition is met.</p>';
+        html += '</div>';
+        html += '</div></div>';
+        html += '</div>';
+
+        // Validation panel
+        html += '<div class="insp-panel' + (activeTab === "validation" ? " is-active" : "") + '" data-panel="validation">';
+        html += '<div class="insp-card">';
+        html += '<div class="insp-card-head">Constraints</div>';
+        html += '<div class="insp-card-body">';
+        html += '<div class="insp-toggle-row">';
+        html += '<span class="insp-toggle-label">Required field</span>';
+        html += '<label class="toggle"><input type="checkbox" id="toggleReqV"' + (field.required ? " checked" : "") + ' /><span class="toggle-slider"></span></label>';
+        html += '</div>';
+        html += '<div class="insp-row" style="margin-top:14px;">';
+        html += '<label class="insp-label">Custom error message</label>';
+        html += '<input class="insp-input" type="text" id="editErrorMsg" placeholder="e.g. Please provide a valid email" />';
+        html += '<p class="insp-hint">Shown when this field fails validation.</p>';
+        html += '</div>';
+        html += '</div></div>';
+        html += '</div>';
+
+        body.innerHTML = html;
+
+        // --- BIND EVENTS ---
+        document.getElementById("editLabel").addEventListener("input", function(e) {
+          field.label = e.target.value;
+          head.querySelector(".insp-head-name").textContent = field.label;
+          var sel = document.querySelector(".field-card.selected .field-card-label");
+          if (sel) sel.innerHTML = field.label + (field.required ? '<span class="required-mark">*</span>' : "");
+        });
+
+        document.getElementById("editPlaceholder").addEventListener("input", function(e) {
+          field.placeholder = e.target.value;
+        });
+
+        var syncRequired = function(e) {
+          field.required = e.target.checked;
+          var other = e.target.id === "toggleReq" ? document.getElementById("toggleReqV") : document.getElementById("toggleReq");
+          if (other) other.checked = field.required;
+          var sel = document.querySelector(".field-card.selected .field-card-label");
+          if (sel) sel.innerHTML = field.label + (field.required ? '<span class="required-mark">*</span>' : "");
+        };
+        document.getElementById("toggleReq").addEventListener("change", syncRequired);
+        document.getElementById("toggleReqV").addEventListener("change", syncRequired);
+
+        document.getElementById("editLogic").addEventListener("change", function(e) {
+          field.hasLogic = e.target.value !== "none";
+          renderCanvas();
+        });
+      }
+
+      // ================================================================
+      // TOP BAR ACTIONS
+      // ================================================================
+      function copyShortcode() {
+        var code = '<Formdash formId="get-quote" />';
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(code).then(function() { showToast("Copied: " + code); });
+        } else {
+          prompt("Copy this shortcode:", code);
+        }
+      }
+
+      function saveForm() { showToast("Form saved"); }
+
+      function showToast(msg) {
+        var el = document.createElement("div");
+        el.textContent = msg;
+        el.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:8px 16px;background:#111827;color:#fff;border-radius:6px;font-size:13px;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:200;opacity:0;transition:opacity 200ms ease;";
+        document.body.appendChild(el);
+        requestAnimationFrame(function() { el.style.opacity = "1"; });
+        setTimeout(function() { el.style.opacity = "0"; setTimeout(function() { el.remove(); }, 200); }, 2000);
+      }
+
+      // Boot
+      renderCanvas();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "name": "@formdash/pro",
+  "version": "0.1.0",
+  "description": "Commercial multi-step, conditional logic, and CRM integration engine for Formdash",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "emdash", "forms", "conditional-logic", "multi-step"
+  ],
+  "author": "Swapnil Maheshwari",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "dependencies": {
+    "@formdash/types": "workspace:*",
+    "@formdash/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
+  }
+}

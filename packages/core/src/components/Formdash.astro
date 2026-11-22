@@ -1,0 +1,211 @@
+---
+import type { FormDefinition } from "@formdash/types";
+
+interface Props {
+    form: FormDefinition;
+    submitUrl?: string;
+    themeColor?: string;
+}
+
+const { 
+    form, 
+    submitUrl = '/api/formdash/submit', 
+    themeColor = '#2563eb' 
+} = Astro.props;
+
+const hasSteps = form.isMultiStep && form.steps.length > 0;
+
+// Identify fields that should start hidden (targets of 'show' rules)
+const conditionallyHiddenFieldIds = new Set(
+    form.rules.filter((r:any) => r.action === 'show' && r.targetFieldId).map((r:any) => r.targetFieldId)
+);
+---
+
+<div class="formdash-container" style={`--fd-primary: ${themeColor}`}>
+    {hasSteps && (
+        <div class="formdash-progress-wrapper">
+            <div class="formdash-step-indicator">Step 1 of {form.steps.length}</div>
+            <div class="formdash-progress-track"></div>
+            <div class="formdash-progress-fill" style="width: 25%;"></div>
+        </div>
+    )}
+
+    <form id=`fd-${form.id}` data-rules={JSON.stringify(form.rules)} novalidate>
+        <!-- Anti-bot Honeypot -->
+         <input type="text" name="_fd_hp" style="display:none !important;" tabindex="-1" autocomplete="off" />
+
+         {hasSteps ? (form.steps.map((step:any,idx:any) => (
+            <div class={`formdash-step ${idx !== 0 ? 'hidden' : ''}`} data-step-id={step.id}>
+                <div class="formdash-step-header">
+                    <h3>{step.title}</h3>
+                    {step.description && 
+                        <p>{step.description}</p>
+                    }
+                </div>
+                <div class="formdash-grid">
+                    {form.fields.filter((f:any) => f.stepId === step.id).map((field:any) => (
+                        <div class={`formdash-field width-${field.width}`} data-field-id={field.id}>
+                            <label for={field.id}>
+                                {field.label}
+                                {field.validation.required && <span class="required-star">*</span>}
+                            </label>
+                            {field.type === 'textarea' ? (
+                                <textarea id={field.id} name={field.name} placeholder={field.placeholder} required={field.validation.required} ></textarea>
+                            ) : field.type === 'select' ? (
+                                <select name={field.name} id={field.id} required={field.validation.required}>
+                                    <option value=""> Select an option...</option>
+                                    {field.options?.map((opt:any) => <option value={opt.value}>{opt.label}</option>)}
+                                </select>
+                            ) : (
+                                <input type={field.type} id={field.id} name={field.name} placeholder={field.placeholder} required={field.validation.required} />
+                            )}
+                            {field.helpText && <span class="help-text">{field.helptext}</span>}
+                        </div>
+                    ))}
+                </div>
+                <div class="formdash-step-actions">
+                    {idx > 0 && 
+                        <button type="button" class="formdash-btn-prev">Back</button>
+                    }
+                    {idx < form.steps.length -1 ? ( 
+                        <button type="button" class="formdash-btn-next">Next</button>
+                    ) : (
+                        <button type="submit" class="formdash-btn-submit">{form.settings.submitButtonText || 'Submit'}</button>
+                    )}
+                </div>
+            </div>
+         ))) : (
+            <div class="formdash-grid">
+                {form.fields.map((field:any) => {
+                    const isInitiallyHidden = conditionallyHiddenFieldIds.has(field.id);
+                return (
+                    <div class={`formdash-field width-${field.width} ${isInitiallyHidden ? 'hidden' : ''}`} data-field-id={field.id}>
+                        <label for={field.id}>
+                            {field.label}
+                            {field.validation?.required && <span class="required-star">*</span>}
+                        </label>
+
+                        {field.type === 'textarea' ? (
+                            <textarea name={field.name} id={field.id} placeholder={field.placeholder} required={field.validation?.required}></textarea>
+                        ): field.type === 'select' ? (
+                            <select name={field.name} id={field.id} required={field.validation?.required}>
+                                <option value="">Select an option...</option>
+                                {field.options?.map((opt: any) => <option value={opt.value}>{opt.label}</option>)}
+                            </select>
+                        ) : (
+                        <input type={field.type} name={field.name} id={field.id} placeholder={field.placeholder} required={field.validation.required} />
+                        )}
+                    </div>
+                );
+                })}
+                <button type="submit" class="formdash-btn-submit">{form.settings.submitButtonText || 'Submit'}</button>
+            </div>
+         )}
+    </form>
+
+    <div class="formdash-success hidden">
+        <h4>Success!</h4>
+        <p>{form.settings.successMessage || 'Thank you! Your response has been recorded.'}</p>
+    </div>
+</div>
+
+<style>
+    .formdash-container {
+        max-width: 640px;
+        margin: 0 auto;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        color: #1f2937;
+    }
+    .formdash-progress-track {
+        background: #e5e7eb;
+        height: 8px;
+        border-radius: 9999px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    .formdash-progress-fill {
+        background: var(--fd-primary);
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+    .formdash-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+        transition: opacity 0.2s ease;
+    }
+    .formdash-field {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    .formdash-field input, .formdash-field select, .formdash-field textarea {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .width-full {
+        width: 100%;
+    }
+    .width-half {
+        width: calc(50% - 0.5rem);
+    }
+    .hidden {
+        display: none !important;
+    }
+    label {
+        font-weight: 500;
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+    .required-star {
+        color: #ef4444;
+    }
+    input, select, textarea {
+        padding: 0.625rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-size: 1rem;
+    }
+    .formdash-step-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5rem;
+    }
+    button {
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+    }
+    .formdash-btn-next, .formdash-btn-submit {
+        background: var(--fd-primary);
+        color: white;
+        margin-left: auto;
+    }
+    .formdash-btn-prev {
+        background: #e5e7eb;
+        color: #374151;
+    }
+    .formdash-success {
+        background: #ecfdf5;
+        color: #065f46;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        border: 1px solid #a7f3d0;
+        text-align: center;
+    }
+</style>
+
+<script>
+    import { initFormdashClient } from "../client/runtime.js";
+    // Auto-bind all Formdash forms on the page
+    document.querySelectorAll<HTMLElement>('.formdash-container').forEach(container => {
+        const formEl = container.querySelector('form');
+        if(formEl && formEl.id.startsWith('fd-')) {
+            const formId = formEl.id.replace('fd-', '');
+            initFormdashClient({ formId });
+        }
+    });
+</script>

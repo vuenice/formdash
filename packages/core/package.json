@@ -1,0 +1,46 @@
+{
+  "name": "@formdash/core",
+  "version": "0.1.0",
+  "description": "Core engine and EmDash CMS plugin for Formdash",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./pages/formdash.astro": "./src/pages/formdash.astro",
+    "./pages/formdash/preview.astro": "./src/pages/formdash/preview.astro",
+    "./pages/preview.astro": "./src/pages/formdash/preview.astro",
+    "./components/Formdash.astro": "./src/components/Formdash.astro"
+  },
+  "files": [
+    "dist",
+    "src",
+    "emdash-plugin.jsonc"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "emdash",
+    "forms",
+    "cms",
+    "astro",
+    "astro-integration"
+  ],
+  "author": "Swapnil Maheshwari",
+  "license": "MIT",
+  "dependencies": {
+    "@formdash/types": "^0.1.0",
+    "kysely": "^0.27.4",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
+  }
+}

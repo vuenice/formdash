@@ -1,0 +1,29 @@
+{
+    "$schema": "https://emdashcms.com/schemas/plugin.json",
+    "slug": "formdash",
+    "name": "Formdash Form Builder",
+    "version": "0.1.0",
+    "description": "Drag-and-drop form builder with conditional logic and multi-step forms for EmDash",
+    "author": "Swapnil Maheshwari",
+    "license": "MIT",
+    "entrypoint": "@formdash/core",
+
+    // Required capabilities for database and routes
+    "capabilities": ["network:request", "email:send", "content:read", "content:write"],
+
+    // Database migrations
+    "migrations": {
+        "module": "@formdash/core/db/migrations"
+    },
+
+    // Admin Dashboard menu registration
+    "admin": {
+        "pages": [
+            {
+                "path": "/forms",
+                "label": "Forms",
+                "icon": "clipboard-document-list"
+            }
+        ]
+    }
+}

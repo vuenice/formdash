@@ -1,0 +1,70 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Production & Build outputs
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# npm Registry & Packaging
+*.tgz
+package/
+.npm/
+.npmrc
+!.npmrc.example
+*.publish.log
+
+# Testing & Coverage
+coverage/
+.nyc_output/
+
+# Applications
+apps/
+
+# Frameworks & Tooling
+.astro/
+.cache/
+.temp/
+.turbo/
+.emdash/migrations.json
+uploads/
+
+# Cloudflare Wrangler
+.wrangler/
+.dev.vars
+.dev.vars.*
+
+# Local Databases
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# Environment & Secrets
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+*.sw?
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
