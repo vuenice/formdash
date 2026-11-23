@@ -24,6 +24,7 @@
   "type": "module",
   "devDependencies": {
     "@types/node": "^26.6.6",
+    "dotenv": "^8.2.0",
     "node-fetch": "^3.3.2",
     "typescript": "^7.0.2"
   }
