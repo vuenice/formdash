@@ -21,7 +21,7 @@
     "emdash-plugin.jsonc"
   ],
   "scripts": {
-    "build": "node init && tsc",
+    "build": "tsc",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist"
   },
